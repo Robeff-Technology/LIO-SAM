@@ -1399,6 +1399,7 @@ public:
 
     void addGPSFactor()
     {
+        RCLCPP_INFO(this->get_logger(), "GIRDIM, gpsQueue.size: %d", gpsQueue.size());
         if (gpsQueue.empty())
             return;
 
@@ -1407,7 +1408,7 @@ public:
             return;
         else
         {
-            if (pointDistance(cloudKeyPoses3D->front(), cloudKeyPoses3D->back()) < 5.0)
+            if (pointDistance(cloudKeyPoses3D->front(), cloudKeyPoses3D->back()) < 0.0)
                 return;
         }
 
@@ -1459,7 +1460,7 @@ public:
                 curGPSPoint.x = gps_x;
                 curGPSPoint.y = gps_y;
                 curGPSPoint.z = gps_z;
-                if (pointDistance(curGPSPoint, lastGPSPoint) < 0.01)
+                if (pointDistance(curGPSPoint, lastGPSPoint) < 1.0)
                     continue;
                 else
                     lastGPSPoint = curGPSPoint;
