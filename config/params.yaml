@@ -2,11 +2,10 @@
   ros__parameters:
 
     # Topics
-    pointCloudTopic: "/sensing/lidar/top/mirror_cropped/pointcloud_ex"                   # Point cloud data
-    imuTopic: "/sensing/gnss/clap/ros/imu"                        # IMU data
+    pointCloudTopic: "/aw_points"                   # Point cloud data
+    imuTopic: "/clap/ros/imu"                        # IMU data
     odomTopic: "odometry/imu"                    # IMU pre-preintegration odometry, same frequency as IMU
-    gpsTopic: "/sensing/gnss/clap/ros/odometry"                    # GPS odometry topic from navsat, see module_navsat.launch file
-    #gpsTopic: "/xy"                    # GPS odometry topic from navsat, see module_navsat.launch file
+    gpsTopic: "/xy"                    # GPS odometry topic from navsat, see module_navsat.launch file
 
     # Frames
     lidarFrame: "laser_sensor_frame"
@@ -15,15 +14,23 @@
     mapFrame: "map"
 
     # GPS Settings
-    useImuHeadingInitialization: true           # if using GPS data, set to "true"
-    useGpsElevation: true                       # if GPS elevation is bad, set to "false"
+    useGPS: false
+    gpsFrequence: 10                              # set proper gps frequence to align gps and lidar timestamp
+    useImuHeadingInitialization: false           # if using GPS data, set to "true"
+    useGpsElevation: false                       # if GPS elevation is bad, set to "false"
     gpsCovThreshold: 0.2                         # m^2, threshold for using GPS data
     poseCovThreshold: 0.2                       # m^2, threshold for using GPS data
+
+    # debug setting
+    debugLidarTimestamp: false
+    debugImu: false
+    debugGps: false
 
     # Export settings
     savePCD: true                               # https://github.com/TixiaoShan/LIO-SAM/issues/3
     savePCDDirectory: "/Downloads/LOAM!/"         # in your home folder, starts and ends with "/". Warning: the code deletes "LOAM" folder then recreates it. See "mapOptimization" for implementation
-
+    scene_name: "map"
+   
     # Sensor Settings
     sensor: velodyne                               # lidar sensor type, either 'velodyne', 'ouster' or 'livox'
     N_SCAN: 32                                   # number of lidar channels (i.e., Velodyne/Ouster: 16, 32, 64, 128, Livox Horizon: 6)
@@ -34,6 +41,7 @@
     lidarMaxRange: 60.0                        # default: 1000.0, maximum lidar range to be used
 
     # IMU Settings
+    imuFrequence: 200
     imuAccNoise: 3.9939570888238808e-03
     imuGyrNoise: 1.5636343949698187e-03
     imuAccBiasN: 6.4356659353532566e-05
@@ -42,13 +50,13 @@
     imuGravity: 9.80511
     imuRPYWeight: 0.01
 
-    extrinsicTrans:  [ -0.919975,  0.0,  -1.7155 ]
+    extrinsicTrans:  [ -0.0,  0.0,  -0.18 ]
 
-    extrinsicRot:    [1.0,  0.0,  0.0,
-                      0.0,  1.0,  0.0,
+    extrinsicRot:    [ -1.0,  0.0,  0.0,
+                      0.0,  -1.0,  0.0,
                       0.0,  0.0, 1.0 ]
-    extrinsicRPY: [ 1.0,  0.0,  0.0,
-                    0.0,  1.0,  0.0,
+    extrinsicRPY: [ -1.0,  0.0,  0.0,
+                    0.0,  -1.0,  0.0,
                     0.0,  0.0,  1.0 ]
 
     # LOAM feature threshold
@@ -93,3 +101,6 @@
     globalMapVisualizationSearchRadius: 1000.0    # meters, global map visualization radius
     globalMapVisualizationPoseDensity: 10.0       # meters, global map visualization keyframe density
     globalMapVisualizationLeafSize: 1.0           # meters, global map visualization cloud density
+
+    # mapping
+    globalMapLeafSize: 0.2                        # saved map voxgrid size

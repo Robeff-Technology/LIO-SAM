@@ -75,6 +75,8 @@ public:
     string odomTopic;
     string gpsTopic;
 
+    string pcd_suffix;
+
     //Frames
     string lidarFrame;
     string baselinkFrame;
@@ -82,17 +84,29 @@ public:
     string mapFrame;
 
     // GPS Settings
+    int gpsFrequence;
+    bool useGPS;
+    bool updateOrigin;
     bool useImuHeadingInitialization;
     bool useGpsElevation;
     float gpsCovThreshold;
     float poseCovThreshold;
+    float gpsDistance;
+
+    // debug setting
+    bool debugLidarTimestamp;
+    bool debugImu;
+    bool debugGps;
 
     // Save pcd
     bool savePCD;
     string savePCDDirectory;
+    string sequence;
+    string saveDirectory;
+    string configDirectory;
 
     // Lidar Sensor Configuration
-    SensorType sensor = SensorType::OUSTER;
+    SensorType sensor;
     int N_SCAN;
     int Horizon_SCAN;
     int downsampleRate;
@@ -100,6 +114,8 @@ public:
     float lidarMaxRange;
 
     // IMU
+    int imuType;
+    int imuFrequence;
     float imuAccNoise;
     float imuGyrNoise;
     float imuAccBiasN;
@@ -113,6 +129,18 @@ public:
     Eigen::Matrix3d extRPY;
     Eigen::Vector3d extTrans;
     Eigen::Quaterniond extQRPY;
+    
+    vector<double> imuAccBias_NV;
+    vector<double> imuGyrBias_NV;
+    vector<double> imuGravity_NV;
+    Eigen::Vector3d imuAccBias_N;
+    Eigen::Vector3d imuGyrBias_N;
+    Eigen::Vector3d imuGravity_N;
+
+    Eigen::Quaterniond q_sensor_body;
+    Eigen::Vector3d t_sensor_body;
+    Eigen::Quaterniond q_body_sensor;
+    Eigen::Vector3d t_body_sensor;
 
     // LOAM
     float edgeThreshold;
@@ -151,7 +179,8 @@ public:
     float globalMapVisualizationSearchRadius;
     float globalMapVisualizationPoseDensity;
     float globalMapVisualizationLeafSize;
-
+    float globalMapLeafSize;
+    
     ParamServer(std::string node_name, const rclcpp::NodeOptions & options) : Node(node_name, options)
     {
         declare_parameter("pointCloudTopic", "points");
@@ -180,11 +209,35 @@ public:
         get_parameter("gpsCovThreshold", gpsCovThreshold);
         declare_parameter("poseCovThreshold", 25.0);
         get_parameter("poseCovThreshold", poseCovThreshold);
+        declare_parameter("useGPS", false);
+        get_parameter("useGPS", useGPS);
+        declare_parameter("updateOrigin", false);
+        get_parameter("updateOrigin", updateOrigin);
+        declare_parameter("gpsFrequence", false);
+        get_parameter("gpsFrequence", gpsFrequence);
+        declare_parameter("gpsDistance", 0.5);
+        get_parameter("gpsDistance", gpsDistance);
+
+        declare_parameter("debugLidarTimestamp", false);
+        get_parameter("debugLidarTimestamp", debugLidarTimestamp);
+        declare_parameter("debugImu", false);
+        get_parameter("debugImu", debugImu);
+        declare_parameter("debugGps", false);
+        get_parameter("debugGps", debugGps);
 
         declare_parameter("savePCD", false);
         get_parameter("savePCD", savePCD);
         declare_parameter("savePCDDirectory", "/Downloads/LOAM/");
         get_parameter("savePCDDirectory", savePCDDirectory);
+        
+        declare_parameter("saveDirectory", "/Downloads/LOAM/");
+        get_parameter("saveDirectory", saveDirectory);
+        declare_parameter("sequence", "map");
+        get_parameter("sequence", sequence);
+        declare_parameter("configDirectory", "map");
+        get_parameter("configDirectory", configDirectory);
+
+        std::cout << "SAVE DIR:" << saveDirectory << std::endl;
 
         std::string sensorStr;
         declare_parameter("sensor", "ouster");
@@ -220,6 +273,12 @@ public:
         declare_parameter("lidarMaxRange", 1000.0);
         get_parameter("lidarMaxRange", lidarMaxRange);
 
+        declare_parameter("imuType", 0);
+        get_parameter("imuType", imuType);
+
+        declare_parameter("imuFrequence", 500);
+        get_parameter("imuFrequence", imuFrequence);
+        
         declare_parameter("imuAccNoise", 9e-4);
         get_parameter("imuAccNoise", imuAccNoise);
         declare_parameter("imuGyrNoise", 1.6e-4);
@@ -250,6 +309,11 @@ public:
         extRPY = Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(extRPYV.data(), 3, 3);
         extTrans = Eigen::Map<const Eigen::Matrix<double, -1, -1, Eigen::RowMajor>>(extTransV.data(), 3, 1);
         extQRPY = Eigen::Quaterniond(extRPY);
+       
+        q_sensor_body = Eigen::Quaterniond(extRPY);
+        t_sensor_body = extTrans;
+        q_body_sensor = q_sensor_body.inverse();
+        t_body_sensor = -(q_sensor_body.inverse() * t_sensor_body);        
 
         declare_parameter("edgeThreshold", 1.0);
         get_parameter("edgeThreshold", edgeThreshold);
@@ -329,6 +393,14 @@ public:
         // rotate roll pitch yaw
         Eigen::Quaterniond q_from(imu_in.orientation.w, imu_in.orientation.x, imu_in.orientation.y, imu_in.orientation.z);
         Eigen::Quaterniond q_final = q_from * extQRPY;
+        if (imuType == 0) {
+            q_final = extQRPY;
+        } else if (imuType == 1)
+            q_final = q_from * extQRPY;
+        else
+            std::cout << "pls set your imu_type, 0 for 6axis and 1 for 9axis" << std::endl;
+
+        q_final.normalize();
         imu_out.orientation.x = q_final.x();
         imu_out.orientation.y = q_final.y();
         imu_out.orientation.z = q_final.z();
