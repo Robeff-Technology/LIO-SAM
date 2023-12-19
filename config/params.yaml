@@ -2,10 +2,10 @@
   ros__parameters:
 
     # Topics
-    pointCloudTopic: "/aw_points"                   # Point cloud data
-    imuTopic: "/clap/ros/imu"                        # IMU data
+    pointCloudTopic: "/sensing/lidar/top/mirror_cropped/pointcloud_ex"                   # Point cloud data
+    imuTopic: "/sensing/gnss/clap/ros/imu"                        # IMU data
     odomTopic: "odometry/imu"                    # IMU pre-preintegration odometry, same frequency as IMU
-    gpsTopic: "/xy"                    # GPS odometry topic from navsat, see module_navsat.launch file
+    gpsTopic: "/sensing/gnss/clap/ros/odometry"                    # GPS odometry topic from navsat, see module_navsat.launch file
 
     # Frames
     lidarFrame: "laser_sensor_frame"
@@ -14,8 +14,8 @@
     mapFrame: "map"
 
     # GPS Settings
-    useGPS: false
-    gpsFrequence: 10                              # set proper gps frequence to align gps and lidar timestamp
+    # useGPS: false
+    # gpsFrequence: 500                             # set proper gps frequence to align gps and lidar timestamp
     useImuHeadingInitialization: false           # if using GPS data, set to "true"
     useGpsElevation: false                       # if GPS elevation is bad, set to "false"
     gpsCovThreshold: 0.2                         # m^2, threshold for using GPS data
@@ -41,7 +41,7 @@
     lidarMaxRange: 60.0                        # default: 1000.0, maximum lidar range to be used
 
     # IMU Settings
-    imuFrequence: 200
+    # imuFrequence: 200
     imuAccNoise: 3.9939570888238808e-03
     imuGyrNoise: 1.5636343949698187e-03
     imuAccBiasN: 6.4356659353532566e-05

@@ -84,8 +84,8 @@ public:
     string mapFrame;
 
     // GPS Settings
-    int gpsFrequence;
-    bool useGPS;
+    // int gpsFrequence;
+    // bool useGPS;
     bool updateOrigin;
     bool useImuHeadingInitialization;
     bool useGpsElevation;
@@ -115,7 +115,7 @@ public:
 
     // IMU
     int imuType;
-    int imuFrequence;
+    // int imuFrequence;
     float imuAccNoise;
     float imuGyrNoise;
     float imuAccBiasN;
@@ -209,12 +209,12 @@ public:
         get_parameter("gpsCovThreshold", gpsCovThreshold);
         declare_parameter("poseCovThreshold", 25.0);
         get_parameter("poseCovThreshold", poseCovThreshold);
-        declare_parameter("useGPS", false);
-        get_parameter("useGPS", useGPS);
+        // declare_parameter("useGPS", false);
+        // get_parameter("useGPS", useGPS);
         declare_parameter("updateOrigin", false);
         get_parameter("updateOrigin", updateOrigin);
-        declare_parameter("gpsFrequence", false);
-        get_parameter("gpsFrequence", gpsFrequence);
+        // declare_parameter("gpsFrequence", false);
+        // get_parameter("gpsFrequence", gpsFrequence);
         declare_parameter("gpsDistance", 0.5);
         get_parameter("gpsDistance", gpsDistance);
 
@@ -276,8 +276,8 @@ public:
         declare_parameter("imuType", 0);
         get_parameter("imuType", imuType);
 
-        declare_parameter("imuFrequence", 500);
-        get_parameter("imuFrequence", imuFrequence);
+        // declare_parameter("imuFrequence", 500);
+        // get_parameter("imuFrequence", imuFrequence);
         
         declare_parameter("imuAccNoise", 9e-4);
         get_parameter("imuAccNoise", imuAccNoise);
