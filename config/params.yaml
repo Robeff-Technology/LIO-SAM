@@ -52,14 +52,15 @@
 
     imu_type: 0   # 0: 6axis, 1:9 axis
     
-    extrinsicTrans:  [ -0.0,  0.0,  -0.18 ]
+    extrinsicTrans:  [ -0.919975,  0.0,  -1.7155 ]
 
-    extrinsicRot:    [ -1.0,  0.0,  0.0,
-                      0.0,  -1.0,  0.0,
+    extrinsicRot:    [1.0,  0.0,  0.0,
+                      0.0,  1.0,  0.0,
                       0.0,  0.0, 1.0 ]
-    extrinsicRPY: [ -1.0,  0.0,  0.0,
-                    0.0,  -1.0,  0.0,
+    extrinsicRPY: [ 1.0,  0.0,  0.0,
+                    0.0,  1.0,  0.0,
                     0.0,  0.0,  1.0 ]
+
 
     # LOAM feature threshold
     edgeThreshold: 1.0
