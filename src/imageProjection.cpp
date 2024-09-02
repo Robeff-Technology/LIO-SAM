@@ -269,6 +269,9 @@ public:
         timeScanCur = stamp2Sec(cloudHeader.stamp);
         timeScanEnd = timeScanCur + laserCloudIn->points.back().time;
 
+        vector<int> indices;
+        pcl::removeNaNFromPointCloud(*laserCloudIn, *laserCloudIn, indices);
+        
         // check dense flag
         if (laserCloudIn->is_dense == false)
         {
